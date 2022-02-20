@@ -11,6 +11,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.maps.UiSettings
@@ -54,6 +55,9 @@ class LocationPickerActivityUnitTests {
     private lateinit var mapboxMap: MapboxMap
 
     @Mock
+    private lateinit var mapView: MapView
+
+    @Mock
     private lateinit var cameraPosition: CameraPosition
 
     @Mock
@@ -93,6 +97,7 @@ class LocationPickerActivityUnitTests {
         activity = Robolectric.buildActivity(LocationPickerActivity::class.java).get()
 
         Whitebox.setInternalState(activity, "mapboxMap", mapboxMap)
+        Whitebox.setInternalState(activity, "mapView", mapView)
         Whitebox.setInternalState(activity, "applicationKvStore", applicationKvStore)
         Whitebox.setInternalState(activity, "cameraPosition", cameraPosition)
         Whitebox.setInternalState(activity, "modifyLocationButton", modifyLocationButton)
@@ -236,6 +241,16 @@ class LocationPickerActivityUnitTests {
         verify(applicationKvStore, times(1))
             .putString(LAST_ZOOM, position.zoom.toString())
         verify(mapboxMap, times(4)).cameraPosition
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun testOnLowMemory() {
+        val method: Method = LocationPickerActivity::class.java.getDeclaredMethod(
+            "onLowMemory"
+        )
+        method.isAccessible = true
+        method.invoke(activity)
     }
 
 }
